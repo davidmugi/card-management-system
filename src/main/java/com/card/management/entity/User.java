@@ -30,4 +30,6 @@ public class User extends BaseEntity {
 
     @Column(name = "type")
     private int userType;
+
+    private boolean isEnabled;
 }

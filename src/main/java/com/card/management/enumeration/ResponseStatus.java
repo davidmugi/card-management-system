@@ -7,7 +7,9 @@ public enum ResponseStatus {
 
     FAILED("01","Failed request") , SUCESSS("00","Request proccessed successfully"),
     UNAUTHORIZED("02","Unauthorized access"),BADREQUEST("03","Bad request"),
-    ERROR("03","Error processing request"),INTERNAL_ERROR("04","Internal Server error");
+    ERROR("03","Error processing request"),INTERNAL_ERROR("04","Internal Server error"),
+    DISABLED("05","User is disabled"),INVALID_LOGIN_ATTEMPTED("06","Invalid Login Attempted");
+
 
     private String status;
 
