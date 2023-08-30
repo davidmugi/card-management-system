@@ -69,14 +69,15 @@ public class SecurityConfiguration {
         CustomFilter customFilter =   new CustomFilter(authenticationManager());
         customFilter.setFilterProcessesUrl("/api/auth/login");
 
-        http.csrf(AbstractHttpConfigurer::disable)
+    http.csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(
             request ->
-                request.requestMatchers("/api/auth/*").permitAll()
-                        .anyRequest().authenticated())
+                request.requestMatchers("/api/auth/*").permitAll().anyRequest().authenticated())
         .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
         .authenticationProvider(authenticationProvider())
-        .addFilterBefore(customFilter, UsernamePasswordAuthenticationFilter.class);
+        .addFilter(customFilter)
+        .addFilterBefore(
+            new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

@@ -10,12 +10,16 @@ public enum UserType {
         this.code = code;
     }
 
-    public static UserType toEnum(final String name) {
+    public static UserType toEnum(final int code) {
         for (final UserType u : values()) {
-            if (u.name().equalsIgnoreCase(name)) {
+            if (u.code == code) {
                 return u;
             }
         }
         return null;
+    }
+
+    public int getCode() {
+        return code;
     }
 }

@@ -8,9 +8,6 @@ import java.util.Date;
 
 @Getter
 @Setter
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class BaseDTO {
 
     private Long id;

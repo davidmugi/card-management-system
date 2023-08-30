@@ -1,8 +1,6 @@
 package com.card.management.configuration;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
@@ -14,14 +12,13 @@ import java.util.Date;
 @MappedSuperclass
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "updated_on")

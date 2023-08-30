@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "names")
+@Table(name = "cards")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,4 +27,7 @@ public class Card extends BaseEntity {
 
     @Column(name = "status")
     private int status;
+
+    @Column(name = "name")
+    private String name;
 }

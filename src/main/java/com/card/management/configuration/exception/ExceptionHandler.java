@@ -8,6 +8,11 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 @ControllerAdvice
 public class ExceptionHandler {
 
+
+    @org.springframework.web.bind.annotation.ExceptionHandler({
+            BadRequestException.class,
+            UnauthorizedException.class,
+    })
     ResponseEntity<APIResponse> responseResponseEntity(final Exception exception){
 
         ResponseEntity.BodyBuilder builder = null;
@@ -18,12 +23,12 @@ public class ExceptionHandler {
 
             builder = ResponseEntity.status(HttpStatus.BAD_REQUEST);
 
-            builder.body(new APIResponse(ResponseStatus.BADREQUEST.getStatus(),ResponseStatus.BADREQUEST.getStatusCode(),badRequestException.getMessage()));
+            builder.body(new APIResponse(ResponseStatus.BADREQUEST.getStatus(),ResponseStatus.BADREQUEST.getStatusCode(),exception.getMessage()));
 
         }else if (exception instanceof UnauthorizedException unauthorizedException){
             builder = ResponseEntity.status(HttpStatus.UNAUTHORIZED);
 
-            builder.body(new APIResponse(ResponseStatus.UNAUTHORIZED.getStatus(),ResponseStatus.UNAUTHORIZED.getStatusCode(),unauthorizedException.getMessage()));
+            builder.body(new APIResponse(ResponseStatus.UNAUTHORIZED.getStatus(),ResponseStatus.UNAUTHORIZED.getStatusCode(),exception.getMessage()));
 
         }else {
             builder = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR);

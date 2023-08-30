@@ -3,11 +3,12 @@ package com.card.management.dto;
 
 import lombok.*;
 
+import javax.validation.constraints.NotNull;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class CardDTO extends BaseDTO{
 
     private Long userId;
@@ -17,6 +18,9 @@ public class CardDTO extends BaseDTO{
     private String userLastName;
 
     private String color;
+
+    @NotNull(message = "Card name is required")
+    private String name;
 
     private String description;
 

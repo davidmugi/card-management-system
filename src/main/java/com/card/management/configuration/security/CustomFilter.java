@@ -3,38 +3,52 @@ package com.card.management.configuration.security;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.card.management.configuration.exception.APIResponse;
+import com.card.management.dto.CurrentUserDTO;
 import com.card.management.enumeration.ResponseStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+
 
 public class CustomFilter extends UsernamePasswordAuthenticationFilter
 {
 
     private final AuthenticationManager authenticationManager;
 
+    private Logger logger = LoggerFactory.getLogger(CustomFilter.class);
 
     public CustomFilter(final AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
     }
 
   @Override
-  public Authentication attemptAuthentication(
-         final HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-      String username = request.getParameter("email");
-      String password = request.getParameter("password");
+  public Authentication attemptAuthentication(final HttpServletRequest request, HttpServletResponse response) throws  AuthenticationException{
+      Map<String, String> jsonRequest = null;
+
+      try {
+          byte[] inputStreamBytes = StreamUtils.copyToByteArray(request.getInputStream());
+          jsonRequest = new ObjectMapper().readValue(inputStreamBytes, Map.class);
+      } catch (IOException e) {
+          throw new RuntimeException(e);
+      }
+
+      String username = jsonRequest.get("email");
+      String password = jsonRequest.get("password");
 
       final UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
       return authenticationManager.authenticate(authenticationToken);
@@ -43,18 +57,21 @@ public class CustomFilter extends UsernamePasswordAuthenticationFilter
     @Override
     protected void successfulAuthentication(final HttpServletRequest request,final HttpServletResponse response,
                                             final FilterChain chain,final Authentication authentication) throws IOException, ServletException {
-        final org.springframework.security.core.userdetails.User principalUser =
-                (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
+        final CurrentUserDTO principalUser =
+                (CurrentUserDTO) authentication.getPrincipal();
 
         final Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
 
         final int expiresIn = 3600000 * 18;
         final Date dateOfExpiry = new Date(System.currentTimeMillis() + expiresIn);
 
+        response.setContentType("application/json");
+
         final String accessToken = JWT.create().withSubject(principalUser.getUsername())
                 .withExpiresAt(dateOfExpiry)
                 .withIssuer(request.getRequestURL().toString())
-                .withClaim("roles", principalUser.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+                .withClaim("userType", principalUser.getUserType())
+                .withClaim("id", principalUser.getId())
                 .sign(algorithm);
 
 

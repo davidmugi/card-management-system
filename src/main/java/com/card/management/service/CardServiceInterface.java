@@ -7,11 +7,13 @@ import org.springframework.data.domain.Page;
 
 public interface CardServiceInterface
 {
-    APIResponse<CardDTO> createCard(final CardDTO cardDTO);
+    APIResponse<CardDTO> createCard(final CardDTO cardDTO)throws BadRequestException;
 
     APIResponse<CardDTO> updateCard(final CardDTO cardDTO) throws BadRequestException;
 
     APIResponse<CardDTO> findCardById(final Long id) throws BadRequestException;
 
     APIResponse<Page<CardDTO>>  findCardByPagenation(Long userId, Integer pageNo, Integer pageSize, String sortBy);
+
+    APIResponse deleteCardById(final Long id) throws BadRequestException;
 }
