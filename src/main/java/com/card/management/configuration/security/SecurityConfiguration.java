@@ -9,7 +9,9 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -17,28 +19,20 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+
 @Configuration
 public class SecurityConfiguration {
 
     private final UserDetailsService userDetailsService;
 
-    public SecurityConfiguration(UserDetailsService userDetailsService,
-                                 UserRepository userRepository) {
+    private final AuthenticationConfiguration authenticationConfiguration;
+
+
+    public SecurityConfiguration(UserDetailsService userDetailsService,AuthenticationConfiguration authenticationConfiguration) {
         this.userDetailsService = userDetailsService;
-        this.userRepository = userRepository;
+        this.authenticationConfiguration = authenticationConfiguration;
     }
-
-    private static final String[] SWAGGER_WHITELIST = {
-            // -- swagger ui
-            "/v2/api-docs",
-            "/swagger-resources/**",
-            "/configuration/ui",
-            "/configuration/security",
-            "/swagger-ui.html",
-            "/webjars/**"
-    };
-    private final UserRepository userRepository;
-
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -66,18 +60,20 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration authConfig) throws Exception {
-        return authConfig.getAuthenticationManager();
+    public AuthenticationManager authenticationManager() throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
-    public CustomFilter filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http.csrf(AbstractHttpConfigurer::disable)
+        .authorizeHttpRequests(
+            request ->
+                request.requestMatchers("/api/v1/auth").permitAll().anyRequest().authenticated())
+        .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
+        .authenticationProvider(authenticationProvider())
+        .addFilterBefore(new CustomFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class);
 
-    }
-
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().antMatchers(SWAGGER_WHITELIST);
+        return http.build();
     }
 }

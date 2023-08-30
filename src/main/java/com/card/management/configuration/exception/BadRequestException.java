@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @Builder
 public class BadRequestException extends Exception{
 

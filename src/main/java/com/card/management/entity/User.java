@@ -12,8 +12,8 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@Builder
 @AllArgsConstructor
+@Builder
 public class User extends BaseEntity {
 
     @Column(name = "first_name")

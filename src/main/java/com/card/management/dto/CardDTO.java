@@ -8,13 +8,13 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CardDTO {
+public class CardDTO extends BaseDTO{
 
     private Long userId;
 
-    public String userFirstName;
+    private String userFirstName;
 
-    public String userLastName;
+    private String userLastName;
 
     private String color;
 

@@ -12,7 +12,7 @@ public interface CardMapper {
 
     @Mapping(source = "status",target = "statusDesc",qualifiedByName = "cardStatusDesc")
     @Mapping(source = "user.lastname",target = "userLastName")
-    @Mapping(source = "user.firstname",target = "userFirstName")
+    @Mapping(source = "user.firstName",target = "userFirstName")
     CardDTO cardToCardDTO(Card card);
 
     @Named(value = "cardStatusDesc")

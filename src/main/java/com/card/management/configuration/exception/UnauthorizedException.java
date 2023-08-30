@@ -6,7 +6,6 @@ import lombok.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class UnauthorizedException extends Exception{
 
     private ResponseStatus responseStatus = ResponseStatus.UNAUTHORIZED;
