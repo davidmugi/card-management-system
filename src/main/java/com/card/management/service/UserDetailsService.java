@@ -25,6 +25,16 @@ public class UserDetailsService implements org.springframework.security.core.use
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+       try{
+           final User user = userRepository.findUserByEmail(username)
+                   .orElseThrow(() -> new UsernameNotFoundException("Invalid login request"));
+
+           return new org.springframework.security.core.userdetails.User(user.getEmail(),user.getPassword(),user.isEnabled(),
+                   true,true,true,getAuthorities());
+       }catch (Exception ex){
+           ex.getMessage();
+       }
         final User user = userRepository.findUserByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Invalid login request"));
 
