@@ -30,10 +30,10 @@ public class CardController {
         return cardServiceInterface.updateCard(cardDTO);
     }
 
-    @GetMapping("/fetch-all/{userId}")
-    public APIResponse<Page<CardDTO>> fetchAll(@PathVariable("userId") Long userId, @RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "10") Integer pageSize,
-                                               @RequestParam(defaultValue = "") String searchString){
-        return cardServiceInterface.findCardByPagenation(userId,pageNo,pageSize,searchString);
+    @GetMapping("/fetch-all")
+    public APIResponse<Page<CardDTO>> fetchAll(@RequestParam(required = false) Long userId, @RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "10") Integer pageSize,
+                                               @RequestParam(defaultValue = "createdOn") String sortBy,@RequestParam("searchBy") String searchBy){
+        return cardServiceInterface.findCardByPagenation(userId,pageNo,pageSize,sortBy,searchBy);
     }
 
     @GetMapping("/fetch-by-id/{id}")

@@ -23,17 +23,17 @@ public class ExceptionHandler {
 
             builder = ResponseEntity.status(HttpStatus.BAD_REQUEST);
 
-            builder.body(new APIResponse(ResponseStatus.BADREQUEST.getStatus(),ResponseStatus.BADREQUEST.getStatusCode(),exception.getMessage()));
+           return builder.body(new APIResponse(ResponseStatus.BADREQUEST.getStatus(),ResponseStatus.BADREQUEST.getStatusCode(),exception.getMessage()));
 
         }else if (exception instanceof UnauthorizedException unauthorizedException){
             builder = ResponseEntity.status(HttpStatus.UNAUTHORIZED);
 
-            builder.body(new APIResponse(ResponseStatus.UNAUTHORIZED.getStatus(),ResponseStatus.UNAUTHORIZED.getStatusCode(),exception.getMessage()));
+          return builder.body(new APIResponse(ResponseStatus.UNAUTHORIZED.getStatus(),ResponseStatus.UNAUTHORIZED.getStatusCode(),exception.getMessage()));
 
         }else {
             builder = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR);
 
-           new APIResponse<>(ResponseStatus.INTERNAL_ERROR.getStatus(), ResponseStatus.INTERNAL_ERROR.getStatusCode());
+            new APIResponse<>(ResponseStatus.INTERNAL_ERROR.getStatus(), ResponseStatus.INTERNAL_ERROR.getStatusCode());
         }
         return builder.body(response);
     }

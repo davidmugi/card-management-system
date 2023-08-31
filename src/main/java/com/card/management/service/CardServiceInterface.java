@@ -13,7 +13,7 @@ public interface CardServiceInterface
 
     APIResponse<CardDTO> findCardById(final Long id) throws BadRequestException;
 
-    APIResponse<Page<CardDTO>>  findCardByPagenation(Long userId, Integer pageNo, Integer pageSize, String sortBy);
+    APIResponse<Page<CardDTO>>  findCardByPagenation(Long userId, Integer pageNo, Integer pageSize, String sortBy,String searchBy);
 
     APIResponse deleteCardById(final Long id) throws BadRequestException;
 }

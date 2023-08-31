@@ -76,18 +76,42 @@ public class CardService implements CardServiceInterface{
     }
 
     @Override
-    public APIResponse<Page<CardDTO>> findCardByPagenation(Long userId, Integer pageNo, Integer pageSize, String sortBy) {
+    public APIResponse<Page<CardDTO>> findCardByPagenation(Long userId, Integer pageNo, Integer pageSize, String sortBy,String searchBy) {
         Sort sort = Sort.by(Sort.Direction.DESC, sortBy);
         Pageable paging = PageRequest.of(pageNo, pageSize, sort);
 
         final Long queryUserId = getUserType() == UserType.ADMIN.getCode() ? userId : getUserId();
 
-        final Page<CardDTO> cardDTOPage = cardRepository.findCardByUserId(queryUserId,paging).map(cardMapper::cardToCardDTO);
+        return !StringUtils.isEmpty(searchBy) ? filterBySearchString(queryUserId,paging,searchBy) :
+                withoutFilter(queryUserId,paging);
+    }
+
+    private APIResponse<Page<CardDTO>> filterBySearchString(Long queryUserId , Pageable paging,String searchBy){
+        Page<CardDTO> cardDTOPage = null;
+
+        if(getUserType() != UserType.ADMIN.getCode())
+            cardDTOPage = cardRepository.findCardByNameContainsAndUserId(searchBy,queryUserId,paging).map(cardMapper::cardToCardDTO);
+        else
+            cardDTOPage = cardRepository.findCardByNameContains(searchBy,paging).map(cardMapper::cardToCardDTO);
+
 
         return new APIResponse<>
                 (ResponseStatus.SUCESSS.getStatus(),ResponseStatus.SUCESSS.getStatusCode(),cardDTOPage);
     }
 
+    private APIResponse<Page<CardDTO>> withoutFilter(Long queryUserId , Pageable paging){
+        Page<CardDTO> cardDTOPage = null;
+
+        if(getUserType() != UserType.ADMIN.getCode())
+            cardDTOPage = cardRepository.findCardByUserId(queryUserId,paging).map(cardMapper::cardToCardDTO);
+        else
+            cardDTOPage = cardRepository.findCardBy(paging).map(cardMapper::cardToCardDTO);
+
+        return new APIResponse<>
+                (ResponseStatus.SUCESSS.getStatus(),ResponseStatus.SUCESSS.getStatusCode(),cardDTOPage);
+    }
+
+    @Override
     public APIResponse deleteCardById(final Long id) throws BadRequestException{
         final Card card = cardRepository.findCardById(id)
                 .orElseThrow(() -> new BadRequestException("Card with provide id not found"));
@@ -109,7 +133,7 @@ public class CardService implements CardServiceInterface{
     }
 
     private void validation(final String color,final String name) throws BadRequestException{
-        if(StringUtils.isNotEmpty(name))
+        if(StringUtils.isEmpty(name))
             throw new BadRequestException("Card name is required");
 
         if(StringUtils.isEmpty(color))
